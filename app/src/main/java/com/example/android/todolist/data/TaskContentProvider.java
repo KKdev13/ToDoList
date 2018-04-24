@@ -19,12 +19,34 @@ package com.example.android.todolist.data;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
 // TODO (1) Verify that TaskContentProvider extends from ContentProvider and implements required methods
 public class TaskContentProvider extends ContentProvider {
+
+    //Define final integer constants for the directory of tasks and a single item
+    //It's a convention to use rounded numbers like 100, 200, 300, etc for directories (tables),
+    //and related ints (101, 102, ..) for items in that directory (like a specific row or subset of data)
+    public static final int TASKS = 100;
+    public static final int TASK_WITH_ID = 101;
+
+    //Define a static buildUriMatcher method that associates URI's with their int match
+    public static UriMatcher buildUriMatcher(){
+        UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH); //NO_MATCH constructs an empty matcher
+
+        //Add matches with addURI(String authority, String path, int code)
+        //Matching the entire directory
+        uriMatcher.addURI(TaskContract.AUTHORITY, TaskContract.PATH_TASKS, TASKS);
+        //Matching a single item (a single row of data with a specific ID)
+        uriMatcher.addURI(TaskContract.AUTHORITY, TaskContract.PATH_TASKS + "/#", TASK_WITH_ID);
+
+        return uriMatcher;
+    }
+    //Declare a static variable for the Uri matcher that you construct
+    private static final UriMatcher sUriMatcher = buildUriMatcher();
 
     //Member variable for a TaskDbHelper that's initialized in the onCreate() method
     private TaskDbHelper mTaskDbHelper;
